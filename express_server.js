@@ -40,10 +40,17 @@ app.get("/urls/new", (req, res) => {
   res.render("urlsNew");
 });
 
+//Delete a specific shortUrl
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   let templateVars = { urls: urlDatabase };
   res.redirect("/urls");
+});
+
+//Edit the longUrl of a specific shortUrl
+app.post("/urls/:shortURL/edit", (req, res) => {
+  urlDatabase[req.params.shortURL] = req.body.longURL;
+  res.redirect(`/urls/${req.params.shortURL}`);
 });
 
 //Redirect user to the longUrl attached to the entered shorUrl
