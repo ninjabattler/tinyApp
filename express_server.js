@@ -4,7 +4,7 @@ const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser')
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 
 app.set("view engine", "ejs");
@@ -18,7 +18,15 @@ const urlDatabase = {
 //All registered users
 const users = {
 
+  'jjjjjj': {
 
+    id: 'jjjjjj',
+
+    email: 'j@j.j',
+
+    password: 'j'
+
+  }
 
 }
 
@@ -27,7 +35,7 @@ function generateRandomString() {
 
   let randomString = "";
 
-  for(let i = 1; i <= 6; i++){
+  for (let i = 1; i <= 6; i++) {
 
     randomString += letters[Math.floor(Math.random() * letters.length)];
 
@@ -36,7 +44,7 @@ function generateRandomString() {
   return randomString;
 }
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase, user: users[req.cookies['userId']]};
+  let templateVars = { urls: urlDatabase, user: users[req.cookies['userId']] };
   res.render("urlsIndex", templateVars);
 });
 //Takes a post request for /urls and generates a new shortened url
@@ -44,57 +52,81 @@ app.post("/urls", (req, res) => {
   let rand = generateRandomString();
   urlDatabase[rand] = req.body.longURL;
   let templateVars = { shortURL: rand, longURL: req.body.longURL };
-  res.render("urlsShow", templateVars);    
+  res.render("urlsShow", templateVars);
+});
+
+//Page to login
+app.get("/login", (req, res) => {
+  let templateVars = { urls: urlDatabase, user: users[req.cookies['userId']], badRequest: false };
+  res.render("login", templateVars);
+});
+
+//Take in a username and log the user in
+app.post("/login", (req, res) => {
+  //Check if username or password fields are empty
+  if (req.body.username === '' || req.body.password === '') {
+    res.statusCode = 400;
+    let templateVars = { urls: urlDatabase, user: users[req.cookies['userId']], badRequest: true };
+    res.render("login", templateVars);
+    return false
+  }
+
+  let foundUser = '';
+
+  //Check for the account
+  for (const user in users) {
+    if (users[user].email === req.body.username) {
+      if (users[user].password === req.body.password) {
+        foundUser = users[user].id;
+      }
+    }
+  }
+
+  if(foundUser === ''){
+    res.statusCode = 400;
+    let templateVars = { urls: urlDatabase, user: users[req.cookies['userId']], badRequest: true };
+    res.render("login", templateVars);
+    return false
+  }
+
+  res.cookie("userId", foundUser);
+  console.log(foundUser);
+  res.redirect("/urls");
 });
 
 //Page to register
 app.get("/register", (req, res) => {
-  let templateVars = { urls: urlDatabase, user: users[req.cookies['userId']], badRequest: false};
-  res.render("register", templateVars);    
+  let templateVars = { urls: urlDatabase, user: users[req.cookies['userId']], badRequest: false };
+  res.render("register", templateVars);
 });
 
 //Register a new user
 app.post("/register", (req, res) => {
 
   //Check if username or password fields are empty
-  if(req.body.username === '' || req.body.password === ''){
-
+  if (req.body.username === '' || req.body.password === '') {
     res.statusCode = 400;
-    let templateVars = { urls: urlDatabase, user: users[req.cookies['userId']], badRequest: true};
-    res.render("register", templateVars);   
+    let templateVars = { urls: urlDatabase, user: users[req.cookies['userId']], badRequest: true };
+    res.render("register", templateVars);
     return false
-
   }
 
   //Check if email has already been used
-  for(const user in users){
-
-    if(users[user].email === req.body.username){
-
+  for (const user in users) {
+    if (users[user].email === req.body.username) {
       res.statusCode = 400;
-      let templateVars = { urls: urlDatabase, user: users[req.cookies['userId']], badRequest: true};
-      res.render("register", templateVars); 
+      let templateVars = { urls: urlDatabase, user: users[req.cookies['userId']], badRequest: true };
+      res.render("register", templateVars);
       return false
-
     }
-
   }
-  
+
   const rand = generateRandomString();
-
-  users[rand] = {id: rand, email: req.body.username, password: req.body.password};
-
+  users[rand] = { id: rand, email: req.body.username, password: req.body.password };
   res.cookie("userId", rand);
-
   console.log(users);
-
-  res.redirect("/urls");    
-});
-
-//Take in a username and log the user in
-app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
   res.redirect("/urls");
+
 });
 
 app.post("/logout", (req, res) => {
@@ -110,7 +142,7 @@ app.get("/urls/new", (req, res) => {
 //Delete a specific shortUrl
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
-  let templateVars = { urls: urlDatabase};
+  let templateVars = { urls: urlDatabase };
   res.redirect("/urls");
 });
 
