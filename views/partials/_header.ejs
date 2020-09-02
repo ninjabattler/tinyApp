@@ -6,11 +6,10 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
-        <a class="nav-item nav-link" href="/urls">My URLs</a>
-        <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
 
         <% if(user && user !== 'undefined') {%>
-          
+          <a class="nav-item nav-link" href="/urls">My URLs</a>
+          <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
           <p class="nav-item nav-link"> Logged in as: <%= user %> </p>
           <div class="nav-item nav-link">
             <form class="form-check" action="/logout" method="POST">
@@ -18,6 +17,8 @@
             </form>
           </div>
         <% } else {%>
+          <a class="nav-item nav-link" href="/login">My URLs</a>
+          <a class="nav-item nav-link" href="/login">Create New URL</a>
           <a class="nav-item nav-link" href="/login">Login</a>
           <a class="nav-item nav-link" href="/register">Register</a>
         <% } %>
