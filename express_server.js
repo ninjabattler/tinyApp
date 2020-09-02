@@ -2,7 +2,11 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser')
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
+
+
 app.set("view engine", "ejs");
 
 //All shortend urls and the full url they reference
@@ -25,7 +29,9 @@ function generateRandomString() {
   return randomString;
 }
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = { urls: urlDatabase, username: req.cookies['username']};
+
+  console.log(templateVars.username)
   res.render("urlsIndex", templateVars);
 });
 //Takes a post request for /urls and generates a new shortened url
@@ -36,6 +42,20 @@ app.post("/urls", (req, res) => {
   res.render("urlsShow", templateVars);    
 });
 
+//Take in a username and log the user in
+app.post("/login", (req, res) => {
+  let templateVars = { urls: urlDatabase };
+  res.cookie('username', req.body.username);
+  res.redirect("/urls");
+});
+
+app.post("/logout", (req, res) => {
+  let templateVars = { urls: urlDatabase };
+  res.cookie('username', req.body.username);
+  res.redirect("/urls");
+});
+
+//
 app.get("/urls/new", (req, res) => {
   res.render("urlsNew");
 });
@@ -43,7 +63,7 @@ app.get("/urls/new", (req, res) => {
 //Delete a specific shortUrl
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
-  let templateVars = { urls: urlDatabase };
+  let templateVars = { urls: urlDatabase};
   res.redirect("/urls");
 });
 
