@@ -49,12 +49,36 @@ app.post("/urls", (req, res) => {
 
 //Page to register
 app.get("/register", (req, res) => {
-  let templateVars = { urls: urlDatabase, user: 'undefined'};
+  let templateVars = { urls: urlDatabase, user: users[req.cookies['userId']], badRequest: false};
   res.render("register", templateVars);    
 });
 
 //Register a new user
 app.post("/register", (req, res) => {
+
+  //Check if username or password fields are empty
+  if(req.body.username === '' || req.body.password === ''){
+
+    res.statusCode = 400;
+    let templateVars = { urls: urlDatabase, user: users[req.cookies['userId']], badRequest: true};
+    res.render("register", templateVars);   
+    return false
+
+  }
+
+  //Check if email has already been used
+  for(const user in users){
+
+    if(users[user].email === req.body.username){
+
+      res.statusCode = 400;
+      let templateVars = { urls: urlDatabase, user: users[req.cookies['userId']], badRequest: true};
+      res.render("register", templateVars); 
+      return false
+
+    }
+
+  }
   
   const rand = generateRandomString();
 

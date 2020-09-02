@@ -9,7 +9,15 @@
   <title>TinyApp</title>
 </head>
 <body>
-  <%- include('partials/_header', {user: user.email}) %>
+  <% if(user !== undefined){ %>
+
+    <%- include('partials/_header', {user: user.email}) %>
+
+  <%} else {%>
+
+    <%- include('partials/_header', {user: 'undefined'}) %>
+
+  <%}%>
 
   <main style="margin: 1em;">
     <h3>My URLs</h3>

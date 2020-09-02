@@ -12,8 +12,16 @@
 
   <body>
 
-    <%- include('partials/_header', {user: user}) %>
+    <% if(user !== undefined){ %>
 
+      <%- include('partials/_header', {user: user.email}) %>
+  
+    <%} else {%>
+  
+      <%- include('partials/_header', {user: 'undefined'}) %>
+  
+    <%}%>
+    
     <main style="margin: 1em;">
       <h3>Create TinyURL</h3>
       <form class="form-inline" action="/urls" method="POST">
