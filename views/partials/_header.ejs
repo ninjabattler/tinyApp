@@ -11,27 +11,15 @@
 
         <% if(user && user !== 'undefined') {%>
           
-          <h3 class="nav-item nav-link"> <%= user %> </h3>
-          <div style="float: right; margin: 0%;">
-            <form class="form-inline" action="/logout" method="POST">
-              <div class="form-group mb-2">
+          <p class="nav-item nav-link"> Logged in as: <%= user %> </p>
+          <div class="nav-item nav-link">
+            <form class="form-check" action="/logout" method="POST">
                 <button type="submit" class="btn btn-outline-secondary">Log Out</button>
-              </div>
             </form>
           </div>
         <% } else {%>
-          <div style="float: right; margin: 0%;">
-            <form class="form-inline" action="/login" method="GET">
-              <div class="form-group mb-2">
-                <button type="submit" class="btn btn-primary">Log in</button>
-              </div>
-            </form>
-            <form class="form-inline" action="/register" method="GET">
-              <div class="form-group mb-2">
-                <button type="submit" class="btn btn-primary">Register</button>
-              </div>
-            </form>
-          </div>
+          <a class="nav-item nav-link" href="/login">Login</a>
+          <a class="nav-item nav-link" href="/register">Register</a>
         <% } %>
         
       </div>

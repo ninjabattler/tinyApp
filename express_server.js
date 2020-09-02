@@ -43,6 +43,7 @@ function generateRandomString() {
 
   return randomString;
 }
+//Main page
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase, user: users[req.cookies['userId']] };
   res.render("urlsIndex", templateVars);
@@ -65,7 +66,7 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   //Check if username or password fields are empty
   if (req.body.username === '' || req.body.password === '') {
-    res.statusCode = 400;
+    res.statusCode = 403;
     let templateVars = { urls: urlDatabase, user: users[req.cookies['userId']], badRequest: true };
     res.render("login", templateVars);
     return false
@@ -83,7 +84,7 @@ app.post("/login", (req, res) => {
   }
 
   if(foundUser === ''){
-    res.statusCode = 400;
+    res.statusCode = 403;
     let templateVars = { urls: urlDatabase, user: users[req.cookies['userId']], badRequest: true };
     res.render("login", templateVars);
     return false
@@ -91,6 +92,12 @@ app.post("/login", (req, res) => {
 
   res.cookie("userId", foundUser);
   console.log(foundUser);
+  res.redirect("/urls");
+});
+
+//Logout by deleting the userId cookie
+app.post("/logout", (req, res) => {
+  res.clearCookie('userId')
   res.redirect("/urls");
 });
 
@@ -129,11 +136,6 @@ app.post("/register", (req, res) => {
 
 });
 
-app.post("/logout", (req, res) => {
-  res.clearCookie('username')
-  res.redirect("/urls");
-});
-
 //Page to create a new Url
 app.get("/urls/new", (req, res) => {
   res.render("urlsNew");
@@ -158,7 +160,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies['userId']] };
   res.render("urlsShow", templateVars);
 });
 
