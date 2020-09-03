@@ -3,7 +3,8 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bcrypt = require('bcrypt');
 const bodyParser = require("body-parser");
-const session = require('cookie-session')
+const session = require('cookie-session');
+const {getUserByEmail, generateRandomString} = require('./helper');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
   name: 'session',
@@ -20,32 +21,12 @@ const urlDatabase = {
 
 //All registered users
 const users = {
-
   'jjjjjj': {
-
     id: 'jjjjjj',
-
     email: 'j@j.j',
-
     password: bcrypt.hashSync('j', 2)
-
   }
-
-}
-
-function generateRandomString() {
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
-
-  let randomString = "";
-
-  for (let i = 1; i <= 6; i++) {
-
-    randomString += letters[Math.floor(Math.random() * letters.length)];
-
-  }
-
-  return randomString;
-}
+};
 
 //Main page
 app.get("/urls", (req, res) => {
@@ -78,15 +59,16 @@ app.post("/login", (req, res) => {
     return false
   }
 
-  let foundUser = '';
-
   //Check for the account
-  for (const user in users) {
-    if (users[user].email === req.body.username) {
-      if (bcrypt.compareSync(req.body.password, users[user].password)) {
-        foundUser = users[user].id;
-      }
+  let foundUser = getUserByEmail(req.body.username, users);
+  if (foundUser) {
+    if (bcrypt.compareSync(req.body.password, foundUser.password)) {
+      foundUser = foundUser.id;
+    } else {
+      foundUser = '';
     }
+  } else {
+    foundUser = '';
   }
 
   if(foundUser === ''){
@@ -125,14 +107,13 @@ app.post("/register", (req, res) => {
   }
 
   //Check if email has already been used
-  for (const user in users) {
-    if (users[user].email === req.body.username) {
-      res.statusCode = 400;
-      let templateVars = { urls: urlDatabase, user: users[req.session.userId], badRequest: true };
-      res.render("register", templateVars);
-      return false
-    }
+  if (getUserByEmail(req.body.username, users)) {
+    res.statusCode = 400;
+    let templateVars = { urls: urlDatabase, user: users[req.session.userId], badRequest: true };
+    res.render("register", templateVars);
+    return false
   }
+  
 
   const rand = generateRandomString();
   users[rand] = { id: rand, email: req.body.username, password: bcrypt.hashSync(req.body.password, 2) };
@@ -170,6 +151,7 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(urlDatabase[req.params.shortURL]['longUrl']);
 });
 
+//Show one tiny Url
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]['longUrl'], id: urlDatabase[req.params.shortURL]['id'], user: users[req.session.userId] };
   res.render("urlsShow", templateVars);
