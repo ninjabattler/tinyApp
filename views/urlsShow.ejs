@@ -27,7 +27,7 @@
       <% if(user !== undefined){ %>
         <% if(id === user.id){ %>
           <h3>Edit</h3>
-          <form class="form-group" action="/urls/<%= shortURL %>/edit" method="POST">
+          <form class="form-group" action="/urls/<%= shortURL %>?_method=PUT" method="POST">
             <div class="form-group mb-2">
               <label for="longURL">New Url:</label>
               <input class="form-group" type="text" name="longURL" placeholder="" style="width: 300px; margin: 1em">

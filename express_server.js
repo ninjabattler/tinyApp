@@ -3,6 +3,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bcrypt = require('bcrypt');
 const bodyParser = require("body-parser");
+const methodOverride = require('method-override')
 const session = require('cookie-session');
 const { getUserByEmail, generateRandomString } = require('./helper');
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -11,6 +12,7 @@ app.use(session({
   keys: ['random'],
 }));
 app.set("view engine", "ejs");
+app.use(methodOverride('_method'))
 
 //All shortend urls and the full url they reference
 const urlDatabase = {
@@ -134,7 +136,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 //Delete a specific shortUrl
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.delete("/urls/:shortURL", (req, res) => {
   if (req.session.userId === urlDatabase[req.params.shortURL].id) {
     delete urlDatabase[req.params.shortURL];
   }
@@ -142,9 +144,9 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 //Edit the longUrl of a specific shortUrl
-app.post("/urls/:shortURL/edit", (req, res) => {
+app.put("/urls/:shortURL", (req, res) => {
   if (req.session.userId === urlDatabase[req.params.shortURL].id) {
-    urlDatabase[req.params.shortURL] = req.body.longURL;
+    urlDatabase[req.params.shortURL] = {longUrl: req.body.longURL,id: urlDatabase[req.params.shortURL].id};
   }
   res.redirect(`/urls/${req.params.shortURL}`);
 });
