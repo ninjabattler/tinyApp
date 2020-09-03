@@ -10,7 +10,6 @@ app.use(session({
   name: 'session',
   keys: ['random'],
 }));
-
 app.set("view engine", "ejs");
 
 //All shortend urls and the full url they reference
@@ -19,7 +18,7 @@ const urlDatabase = {
   "9sm5xK": { longUrl: "http://www.google.com", id: 'jjjjjj' }
 };
 
-//All registered users
+//List all registered users
 const users = {
   'jjjjjj': {
     id: 'jjjjjj',
@@ -28,10 +27,12 @@ const users = {
   }
 };
 
-//Main page
+//Redirect to the main page
 app.get("/", (req, res) => {
   res.redirect("/urls");
 });
+
+//Main page
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase, user: users[req.session.userId] };
   res.render("urlsIndex", templateVars);
