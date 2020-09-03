@@ -4,9 +4,9 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Final Product
 
-!["Welcome page"](./docs/welcomePage.png)
-!["My URLs page"](./docs/myUrlsPage.png)
-!["Edit page"](./docs/editPage.png)
+!["Welcome page"](https://github.com/ninjabattler/tinyApp/blob/master/docs/welcomePage.png)
+!["My URLs page"](https://github.com/ninjabattler/tinyApp/blob/master/docs/myUrlsPage.png)
+!["Edit page"](https://github.com/ninjabattler/tinyApp/blob/master/docs/editPage.png)
 
 ## Dependencies
 
