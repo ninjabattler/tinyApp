@@ -1,4 +1,4 @@
-const generateRandomString = function () {
+const generateRandomString = function() {
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
   let randomString = "";
   for (let i = 1; i <= 6; i++) {
@@ -8,11 +8,11 @@ const generateRandomString = function () {
 };
 
 const getUserByEmail = function(email, database) {
-  for(const user in database){
+  for (const user in database) {
     if (database[user].email === email) {
       return database[user];
     }
   }
 };
 
-module.exports = {generateRandomString, getUserByEmail}
+module.exports = {generateRandomString, getUserByEmail};

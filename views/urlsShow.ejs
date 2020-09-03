@@ -34,7 +34,11 @@
               <button type="submit" class="btn btn-primary">Submit</button>
             </div>
           </form>
+        <% }  else  {%>
+          <h6>You do not own this tinyUrl, you may not edit it's value</h6>
         <% } %>
+      <% }  else  {%>
+        <h6>Please log in to edit a tinyUrl</h6>
       <% } %>
     </main>
   </div>

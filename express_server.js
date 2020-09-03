@@ -4,19 +4,19 @@ const PORT = 8080; // default port 8080
 const bcrypt = require('bcrypt');
 const bodyParser = require("body-parser");
 const session = require('cookie-session');
-const {getUserByEmail, generateRandomString} = require('./helper');
+const { getUserByEmail, generateRandomString } = require('./helper');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
   name: 'session',
   keys: ['random'],
-}))
+}));
 
 app.set("view engine", "ejs");
 
 //All shortend urls and the full url they reference
 const urlDatabase = {
-  "b2xVn2": {longUrl: "http://www.lighthouselabs.ca", id: 'jjjjjj'},
-  "9sm5xK": {longUrl: "http://www.google.com", id: 'jjjjjj'}
+  "b2xVn2": { longUrl: "http://www.lighthouselabs.ca", id: 'jjjjjj' },
+  "9sm5xK": { longUrl: "http://www.google.com", id: 'jjjjjj' }
 };
 
 //All registered users
@@ -29,6 +29,9 @@ const users = {
 };
 
 //Main page
+app.get("/", (req, res) => {
+  res.redirect("/urls");
+});
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase, user: users[req.session.userId] };
   res.render("urlsIndex", templateVars);
@@ -37,9 +40,9 @@ app.get("/urls", (req, res) => {
 //Takes a post request for /urls and generates a new shortened url
 app.post("/urls", (req, res) => {
   let rand = generateRandomString();
-  urlDatabase[rand] = {longUrl: req.body.longURL, id: req.session.userId};
+  urlDatabase[rand] = { longUrl: req.body.longURL, id: req.session.userId };
   console.log(urlDatabase);
-  let templateVars = { shortURL: rand, longURL: req.body.longURL,user: users[req.session.userId]};
+  let templateVars = { shortURL: rand, longURL: req.body.longURL, user: users[req.session.userId], id: req.session.userId };
   res.render("urlsShow", templateVars);
 });
 
@@ -56,7 +59,7 @@ app.post("/login", (req, res) => {
     res.statusCode = 403;
     let templateVars = { urls: urlDatabase, user: users[req.session.userId], badRequest: true };
     res.render("login", templateVars);
-    return false
+    return false;
   }
 
   //Check for the account
@@ -71,11 +74,11 @@ app.post("/login", (req, res) => {
     foundUser = '';
   }
 
-  if(foundUser === ''){
+  if (foundUser === '') {
     res.statusCode = 403;
     let templateVars = { urls: urlDatabase, user: users[req.session.userId], badRequest: true };
     res.render("login", templateVars);
-    return false
+    return false;
   }
 
   req.session.userId = foundUser;
@@ -103,7 +106,7 @@ app.post("/register", (req, res) => {
     res.statusCode = 400;
     let templateVars = { urls: urlDatabase, user: users[req.session.userId], badRequest: true };
     res.render("register", templateVars);
-    return false
+    return false;
   }
 
   //Check if email has already been used
@@ -111,9 +114,9 @@ app.post("/register", (req, res) => {
     res.statusCode = 400;
     let templateVars = { urls: urlDatabase, user: users[req.session.userId], badRequest: true };
     res.render("register", templateVars);
-    return false
+    return false;
   }
-  
+
 
   const rand = generateRandomString();
   users[rand] = { id: rand, email: req.body.username, password: bcrypt.hashSync(req.body.password, 2) };
@@ -131,16 +134,15 @@ app.get("/urls/new", (req, res) => {
 
 //Delete a specific shortUrl
 app.post("/urls/:shortURL/delete", (req, res) => {
-  if(req.session.userId === urlDatabase[req.params.shortURL].id){
+  if (req.session.userId === urlDatabase[req.params.shortURL].id) {
     delete urlDatabase[req.params.shortURL];
   }
-  let templateVars = { urls: urlDatabase };
   res.redirect("/urls");
 });
 
 //Edit the longUrl of a specific shortUrl
 app.post("/urls/:shortURL/edit", (req, res) => {
-  if(req.session.userId === urlDatabase[req.params.shortURL].id){
+  if (req.session.userId === urlDatabase[req.params.shortURL].id) {
     urlDatabase[req.params.shortURL] = req.body.longURL;
   }
   res.redirect(`/urls/${req.params.shortURL}`);
