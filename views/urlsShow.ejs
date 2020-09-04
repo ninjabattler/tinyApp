@@ -41,6 +41,26 @@
         <h6>Please log in to edit a tinyUrl</h6>
       <% } %>
     </main>
+    <h1>Times Visited: <%= visits %></h1>
+    <h3>Unique Visiters:</h3>
+    <% for(let i = 0; i < uniques.length; i++){ %>
+        <h4><%= uniques[i] %></h4>
+    <% } %>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">User</th>
+          <th scope="col">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for(const visit in visitList){ %>
+          <tr>
+            <td><%= visitList[visit].user %></td>
+            <td><%= visitList[visit].date %></td>
+          </tr>
+        <% } %>
+      </tbody>
   </div>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
