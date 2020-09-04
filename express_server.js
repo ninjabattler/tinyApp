@@ -16,8 +16,6 @@ app.use(methodOverride('_method'))
 
 //All shortend urls and the full url they reference
 const urlDatabase = {
-  "b2xVn2": { longUrl: "http://www.lighthouselabs.ca", id: 'jjjjjj', visits: 0},
-  "9sm5xK": { longUrl: "http://www.google.com", id: 'jjjjjj' , visits: 0}
 };
 
 //List all registered users
@@ -40,24 +38,25 @@ const visits = {
 
 //Redirect to the main page
 app.get("/", (req, res) => {
+  if(!req.session.userId){
+    res.redirect('/login');
+    return;
+  }
   res.redirect("/urls");
 });
 
 //Main page
 app.get("/urls", (req, res) => {
-  //Set up cookies for the premade Urls
-  if(!req.session[`uniqueb2xVn2'`]){
-    req.session[`uniqueb2xVn2`] = [];
-  }
-  if(!req.session[`unique9sm5xK`]){
-    req.session[`unique9sm5xK`] = [];
-  }
   let templateVars = { urls: urlDatabase, user: users[req.session.userId] };
   res.render("urlsIndex", templateVars);
 });
 
 //Takes a post request for /urls and generates a new shortened url
 app.post("/urls", (req, res) => {
+  if(!req.session.userId){
+    res.redirect('/login');
+    return;
+  }
   let rand = generateRandomString();
   urlDatabase[rand] = { longUrl: req.body.longURL, id: req.session.userId, visits: 0 };
   visits[rand] = [];
@@ -71,7 +70,7 @@ app.post("/urls", (req, res) => {
     visitList: visits[rand],
     uniques: req.session[`unique${rand}`]
   };
-  res.render("urlsShow", templateVars);
+  res.redirect(`/urls/${rand}`);
 });
 
 //Page to login
@@ -156,6 +155,10 @@ app.post("/register", (req, res) => {
 
 //Page to create a new Url
 app.get("/urls/new", (req, res) => {
+  if(!req.session.userId){
+    res.redirect('/login');
+    return;
+  }
   let templateVars = { urls: urlDatabase, user: users[req.session.userId] };
   res.render("urlsNew", templateVars);
 });
@@ -170,6 +173,10 @@ app.delete("/urls/:shortURL", (req, res) => {
 
 //Edit the longUrl of a specific shortUrl
 app.put("/urls/:shortURL", (req, res) => {
+  if(!req.session.userId){
+    res.redirect('/login');
+    return;
+  }
   if (req.session.userId === urlDatabase[req.params.shortURL].id) {
     urlDatabase[req.params.shortURL] = {
       longUrl: req.body.longURL,
@@ -183,6 +190,10 @@ app.put("/urls/:shortURL", (req, res) => {
 
 //Redirect user to the longUrl attached to the entered shorUrl
 app.get("/u/:shortURL", (req, res) => {
+  if(!req.session[`unique${req.params.shortURL}`]){
+    res.redirect('/urls');
+    return;
+  }
   let unique = true
   
   for(const id of req.session[`unique${req.params.shortURL}`]){

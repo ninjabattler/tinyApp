@@ -16,16 +16,16 @@
     <%- include('partials/_header', {user: 'undefined'}) %>
 
   <%}%>
-    <div class="card text-center">
-      <div class="card-header"></div>
-      <div class="card-body">
-        <h5 class="card-title">TinyURL for: <%= longURL %></h5>
-        <p class="card-text">Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></p>
-      </div>
-    <div class="card-footer text-muted"></div>
-    <main style="margin: 1em;">
-      <% if(user !== undefined){ %>
-        <% if(id === user.id){ %>
+  <% if(user !== undefined){ %>
+    <% if(id === user.id){ %>
+      <div class="card text-center">
+        <div class="card-header"></div>
+        <div class="card-body">
+          <h5 class="card-title">TinyURL for: <%= longURL %></h5>
+          <p class="card-text">Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></p>
+        </div>
+      <div class="card-footer text-muted"></div>
+      <main style="margin: 1em;">
           <h3>Edit</h3>
           <form class="form-group" action="/urls/<%= shortURL %>?_method=PUT" method="POST">
             <div class="form-group mb-2">
@@ -34,33 +34,34 @@
               <button type="submit" class="btn btn-primary">Submit</button>
             </div>
           </form>
+          <h1>Times Visited: <%= visits %></h1>
+          <h3>Unique Visiters:</h3>
+          <% for(let i = 0; i < uniques.length; i++){ %>
+              <h4><%= uniques[i] %></h4>
+          <% } %>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">User</th>
+                <th scope="col">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% for(const visit in visitList){ %>
+                <tr>
+                  <td><%= visitList[visit].user %></td>
+                  <td><%= visitList[visit].date %></td>
+                </tr>
+              <% } %>
+            </tbody>
         <% }  else  {%>
-          <h6>You do not own this tinyUrl, you may not edit it's value</h6>
+          <h4 class="alert-danger">You do not own this tinyUrl, you may not edit it's value</h4>
         <% } %>
       <% }  else  {%>
-        <h6>Please log in to edit a tinyUrl</h6>
+        <h4 class="alert-danger">Please log in to edit a tinyUrl</h4>
       <% } %>
     </main>
-    <h1>Times Visited: <%= visits %></h1>
-    <h3>Unique Visiters:</h3>
-    <% for(let i = 0; i < uniques.length; i++){ %>
-        <h4><%= uniques[i] %></h4>
-    <% } %>
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">User</th>
-          <th scope="col">Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for(const visit in visitList){ %>
-          <tr>
-            <td><%= visitList[visit].user %></td>
-            <td><%= visitList[visit].date %></td>
-          </tr>
-        <% } %>
-      </tbody>
+   
   </div>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
